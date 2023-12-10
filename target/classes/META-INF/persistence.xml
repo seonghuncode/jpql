@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+
+
+    <persistence-unit name="hello"> <!-- JPA이름을 의미, 보토 데이터베이스당 하나를 만든다다 -->
+        <properties>
+            <!-- 필수 속성 (데이터베이스 접근 정보) -->
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="sa"/> <!-- h2 db생성시 작성한 사용자명-->
+            <property name="javax.persistence.jdbc.password" value=""/> <!-- h2 db생성시 작성한 비밀번호-->
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost/~/test"/> <!-- h2 db생성시 작성한 JDBC URL과 동일해야 한다 -->
+            <!-- JPA는 특정 데이터베이스에 종속적이지 않기 때문에 SQL표준을 지키지 않는 특정 데이터베이스의 고유한 기능을 알아서 번역하기 위해서 어떠한 DB를 사용하는지 알려주는 역할 -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+
+            <!-- 옵션 -->
+            <property name="hibernate.show_sql" value="true"/> <!-- 쿼리를 볼것이가에 대한 옵션 -->
+            <property name="hibernate.format_sql" value="true"/> <!-- 이쁘게 정렬 -->
+            <property name="hibernate.use_sql_comments" value="true"/> <!-- 쿼리에 대한 설명을 보여준다. -->
+            <property name="hibernate.hbm2ddl.auto" value="create" />
+        </properties>
+    </persistence-unit>
+</persistence>
