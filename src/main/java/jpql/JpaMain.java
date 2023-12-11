@@ -20,22 +20,25 @@ public class JpaMain {
 
         try {
 
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
             Member member = new Member();
             member.setUsername("member1");
             member.setAge(10);
+
+            member.setTeam(team);
+
             em.persist(member);
 
-//            TypedQuery<Member> query1 =  em.createQuery("select m from Member m where m.username = :username", Member.class);
-//            //이름 기준
-//            query1.setParameter("username", "member1");
-//            Member singResult = query1.getSingleResult();
-//            System.out.println("singResult : " + singResult.getUsername());
 
-            //위의 코드를 체인을 사용해서 작성!
-            Member result  =  em.createQuery("select m from Member m where m.username = :username", Member.class)
-                .setParameter("username", "member1")
-                .getSingleResult();
-            System.out.println("result : " + result.getUsername());
+            em.flush();
+            em.clear();
+
+            String query = "select m from Member m, Team t where m.username = t.name";
+            List<Member> result = em.createQuery(query, Member.class)
+                    .getResultList();
 
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
