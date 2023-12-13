@@ -25,21 +25,31 @@ public class JpaMain {
             em.persist(team);
 
             Member member = new Member();
-            member.setUsername("member1");
+            member.setUsername("관리자");
             member.setAge(10);
+            member.setType(MemberType.ADMIN);
+
+            Member member2 = new Member();
+            member2.setUsername("관리자2");
 
             member.setTeam(team);
 
             em.persist(member);
+            em.persist(member2);
 
 
             em.flush();
             em.clear();
 
-            String query = "select m from Member m, Team t where m.username = t.name";
-            List<Member> result = em.createQuery(query, Member.class)
-                    .getResultList();
+           String query = "select function('group_concat', m.username) from Member m "; //한줄로 반환을 해준다.
 
+
+           List<String> result = em.createQuery(query, String.class)
+                   .getResultList();
+
+           for(String s : result){
+               System.out.println(s);
+           }
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
 
