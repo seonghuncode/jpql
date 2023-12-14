@@ -46,23 +46,16 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-           String query = "select m from Member m "; //한줄로 반환을 해준다.
+           String query = "select distinct t from  Team t join fetch  t.members"; //Member를 조회하는데 team과 조인해서 한번에 가지고 오라는 쿼리
 
 
-           List<Member> result = em.createQuery(query, Member.class)
+           List<Team> result = em.createQuery(query, Team.class)
                    .getResultList();
 
            /* 설명
-           1. 첫번째 루프 : Team을 DB에서 가지고 온다 -> 영속성 컨텍스트에 Team이 들어간다.
-           2. 두번째 루프 : 1차 캐시(영속성 컨텍스트)에서 값을 가지고 온다 (쿼리가 나가지 않는다.)
-           3. 세번째 루프 : 영속성 컨텍스트에 없는 데이터가 필요하기 때문에 쿼리를 통해 DB에서 데이터를 가지고온다.
-           ..
-           ..
-           -패치 조인을 사용하는 이유
-           -> 만약  회원이 여러명일 경우 DB에 조회하기 위해 나가는 쿼리가 너무 많아진다 -> 해당 문제를 해결하기 위해서 사용하는 것이 패치조인을 사용
            * */
-           for(Member m : result){
-               System.out.println("member : " + m.getUsername() + "," + m.getTeam().getName());
+           for(Team team : result){
+               System.out.println("team : " + team.getName() + "," + team.getMembers().size());
            }
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
