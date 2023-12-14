@@ -20,35 +20,49 @@ public class JpaMain {
 
         try {
 
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
 
-            Member member = new Member();
-            member.setUsername("관리자");
-            member.setAge(10);
-            member.setType(MemberType.ADMIN);
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("회원1");
+            member1.setTeam(teamA);
+            em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("관리자2");
-
-            member.setTeam(team);
-
-            em.persist(member);
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             em.persist(member2);
 
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            em.persist(member3);
 
             em.flush();
             em.clear();
 
-           String query = "select function('group_concat', m.username) from Member m "; //한줄로 반환을 해준다.
+           String query = "select m from Member m "; //한줄로 반환을 해준다.
 
 
-           List<String> result = em.createQuery(query, String.class)
+           List<Member> result = em.createQuery(query, Member.class)
                    .getResultList();
 
-           for(String s : result){
-               System.out.println(s);
+           /* 설명
+           1. 첫번째 루프 : Team을 DB에서 가지고 온다 -> 영속성 컨텍스트에 Team이 들어간다.
+           2. 두번째 루프 : 1차 캐시(영속성 컨텍스트)에서 값을 가지고 온다 (쿼리가 나가지 않는다.)
+           3. 세번째 루프 : 영속성 컨텍스트에 없는 데이터가 필요하기 때문에 쿼리를 통해 DB에서 데이터를 가지고온다.
+           ..
+           ..
+           -패치 조인을 사용하는 이유
+           -> 만약  회원이 여러명일 경우 DB에 조회하기 위해 나가는 쿼리가 너무 많아진다 -> 해당 문제를 해결하기 위해서 사용하는 것이 패치조인을 사용
+           * */
+           for(Member m : result){
+               System.out.println("member : " + m.getUsername() + "," + m.getTeam().getName());
            }
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
