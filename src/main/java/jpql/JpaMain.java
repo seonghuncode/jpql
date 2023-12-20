@@ -46,23 +46,12 @@ public class JpaMain {
             em.flush();
             em.clear();
 
-            /*
-            * Team객체에서 batch size를 100으로 했기 때문에
-            * 기존 Team에서 members를 가지고 올때 lazy로딩 상태 인데 -> 해당 lazy상태에서 team뿐만 아니라 result 리스트에 담긴 team도 한번에 100개식 넘긴다
-            * -> query의 team을 조회하는 것 + 조회된 team과 연관된 member의 lazy 로딩 쿼리 (n + 1 문제를 해결하는 방법은 해당 방법을 사용하고나 fetch join을 사용)
-            * */
-           String query = "select  t from  Team t"; //Member를 조회하는데 team과 조인해서 한번에 가지고 오라는 쿼리
-
-
-           List<Team> result = em.createQuery(query, Team.class)
-                   .setFirstResult(0)
-                   .setMaxResults(2)
+           List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+                   .setParameter("username", "회원1")
                    .getResultList();
 
-           /* 설명
-           * */
-           for(Team team : result){
-               System.out.println("team : " + team.getName() + "," + team.getMembers().size());
+           for(Member member : resultList){
+               System.out.println("member : " + member);
            }
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
