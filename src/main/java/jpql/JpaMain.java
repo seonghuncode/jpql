@@ -31,28 +31,38 @@ public class JpaMain {
             Member member1 = new Member();
             member1.setUsername("회원1");
             member1.setTeam(teamA);
+            member1.setAge(0);
             em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("회원2");
             member2.setTeam(teamA);
+            member2.setAge(0);
             em.persist(member2);
 
             Member member3 = new Member();
             member3.setUsername("회원3");
             member3.setTeam(teamB);
+            member3.setAge(0);
             em.persist(member3);
 
-            em.flush();
+            /*
+            * 해당 시점에서 Flush됨
+            * 이미 실행을 했기 때문에 영속성 컨텍스트 에는 member1, member2, member3가 들어있는데
+            * 벌크연산을 할 경우 바로 값을 DB에 강제로 접근을 했기때문에 영속성 컨텍스트에는 나이가 20살로 반영이 되지X
+            *  -> em.clear()를 사용해서 영속성 컨텍스트를 지우고
+            *  ->  Member findMember = em.find(Member.class, member1.getId());로 member를 다시 불러와서 사용해야 한다.
+            * */
+
+
+            //모든 회원의 나이를 20살로 변경
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+
             em.clear();
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember : " + findMember);
 
-           List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
-                   .setParameter("username", "회원1")
-                   .getResultList();
-
-           for(Member member : resultList){
-               System.out.println("member : " + member);
-           }
 
             tx.commit(); // -> 이때 DB에 쿼라가 날라간다.
 
